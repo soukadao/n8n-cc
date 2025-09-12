@@ -12,5 +12,12 @@ services:
       - TZ=Asia/Tokyo
     volumes:
       - n8n_data:/home/node/.n8n
+  mailpit:
+    container_name: mailpit
+    image: axllent/mailpit
+    restart: unless-stopped
+    ports:
+      - 8025:8025
+      - 1025:1025
 volumes:
   n8n_data:
