@@ -1,0 +1,16 @@
+services:
+  n8n:
+    container_name: n8n
+    build:
+      context: .docker
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5678:5678
+    environment:
+      - GENERIC_TIMEZONE=Asia/Tokyo
+      - TZ=Asia/Tokyo
+    volumes:
+      - n8n_data:/home/node/.n8n
+volumes:
+  n8n_data:
