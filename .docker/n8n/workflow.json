@@ -3,21 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.3,
-      "position": [
-        0,
-        0
-      ],
-      "id": "ae66ef72-c884-46d1-8d3d-82ecb37b39d9",
-      "name": "When chat message received",
-      "webhookId": "1e065797-39b6-4e50-b900-d2393a54cc54"
-    },
-    {
-      "parameters": {
-        "command": "=echo \"{{ $json.chatInput }}について詳しくweb検索して情報をまとめてください\" | claude -p "
+        "command": "=echo \"最新({{ $now.minus({days: 1}).toFormat('yyyy年MM月dd日')}}-{{ $now.toFormat('yyyy年MM月dd日') }})のAI情報を教えてください。\" | claude -p "
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -25,12 +11,12 @@
         224,
         0
       ],
-      "id": "0e224f3f-f186-49d9-b04a-0bcde1cf6cad",
+      "id": "12fda638-7119-423a-a6f9-d3876c21a267",
       "name": "Web Search"
     },
     {
       "parameters": {
-        "command": "=echo \"以下の検索結果を整理して、重要なポイントを箇条書きでまとめてください。また、情報源も含めて記載してください。\\n {{ $('Web Search').first().json.stdout }}\" | claude -p"
+        "command": "=echo '以下の検索結果を整理して、重要なポイントをmarkdown形式でまとめてください。\\n {{ $('Web Search').first().json.stdout }}' | claude -p"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -38,25 +24,26 @@
         432,
         0
       ],
-      "id": "6ec09326-3855-41b2-a268-36a8bd1815ca",
+      "id": "9024a1c7-71fc-4dc5-8f3e-b64806ed4aa9",
       "name": "Summarize Results"
     },
     {
       "parameters": {
         "fromEmail": "admin@example.com",
         "toEmail": "info@example.com",
-        "subject": "=検索結果: {{ $('When chat message received').first().json.chatInput }}",
-        "emailFormat": "text",
+        "subject": "={{ $now.minus({days: 1}).toFormat('yyyy年MM月dd') }}-{{ $now.toFormat('dd日') }} 最新AI情報まとめ",
+        "emailFormat": "both",
         "text": "={{ $('Summarize Results').first().json.stdout }}",
+        "html": "={{ $('Markdown').first().json.data }}",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        640,
+        848,
         0
       ],
-      "id": "2fe162a2-286e-486c-973c-c958e79c22b8",
+      "id": "5a0bd7e9-392d-4799-9674-568565f0cbbd",
       "name": "Send email",
       "webhookId": "923cf3ab-0784-4b8d-b4ce-8c8ad7150987",
       "credentials": {
@@ -65,21 +52,60 @@
           "name": "SMTP account"
         }
       }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $('Summarize Results').first().json.stdout }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "0cf41177-be03-4320-8552-3a528c6db43b",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "8158a87f-16e9-4c7c-86a6-13dc83c145ab",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "outputFieldName": "now",
+        "options": {
+          "timezone": "Asia/Tokyo"
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        32,
+        0
+      ],
+      "id": "b6c0d902-df31-4510-871b-44a1b4e89a77",
+      "name": "Date & Time"
     }
   ],
   "pinData": {},
   "connections": {
-    "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "Web Search",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Web Search": {
       "main": [
         [
@@ -95,7 +121,40 @@
       "main": [
         [
           {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
             "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Web Search",
             "type": "main",
             "index": 0
           }
@@ -107,7 +166,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "af67f276-8b70-424f-a717-7872887f4cd7",
+  "versionId": "0d84de53-fff3-4558-9b14-595b1b6dca21",
   "meta": {
     "instanceId": "4eb57c3e92def2c29c821c28544527f472e61a006c727143678b023cd63c345e"
   },
