@@ -1,3 +1,2 @@
 .DS_Store
-.docker/n8n/workflow.json
 .docker/claude/.credentials.json
