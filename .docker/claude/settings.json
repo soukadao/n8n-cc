@@ -1,0 +1,9 @@
+{
+  "model": "opus",
+  "hooks": {
+    "PreToolUse": [],
+    "PostToolUse": [],
+    "Notification": [],
+    "Stop": []
+  }
+}

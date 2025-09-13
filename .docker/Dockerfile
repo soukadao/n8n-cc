@@ -24,8 +24,5 @@ COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
 # ClaudeCode Install
 RUN npm install -g @anthropic-ai/claude-code
 
-# Copy credentials file
-COPY --chown=node:node claude/.credentials.json .claude/.credentials.json
-
 # Switch back to node user
 USER node

@@ -2,4 +2,14 @@
 
 .env
 
-.docker/claude/.credentials.json
+# Claude Settings
+.docker/claude/.claude.json
+
+# Claude Data
+.docker/claude/.claude/.credentials.json
+.docker/claude/.claude/plugins/repos/**/
+.docker/claude/.claude/projects/**/
+.docker/claude/.claude/statsig/*
+!.docker/claude/.claude/statsig/.gitkeep
+.docker/claude/.claude/todos/*
+!.docker/claude/.claude/todos/.gitkeep

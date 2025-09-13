@@ -12,6 +12,9 @@ services:
       - TZ=Asia/Tokyo
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./.docker/claude/.claude.json:/home/node/.claude.json
+      - ./.docker/claude/.claude.json:/home/node/.claude.json.backup
+      - ./.docker/claude/.claude:/home/node/.claude
   mailpit:
     container_name: mailpit
     image: axllent/mailpit
